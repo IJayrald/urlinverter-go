@@ -88,7 +88,7 @@ func TestObjectReversal(t *testing.T) {
 	}
 }
 
-// Checks if url key is existing
+// Checks if lambda function responds to event
 func TestUrlExistingLambdaFunction(t *testing.T) {
 	mockServer := utils.MockServer
 
