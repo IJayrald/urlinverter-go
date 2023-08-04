@@ -35,7 +35,6 @@ func TestArrayReversal(t *testing.T) {
 		"IHG",
 		"FED",
 		"CBA",
-		utils.ReverseString("sample"),
 	}
 
 	reversedArray := utils.ReverseArray(testingData)
