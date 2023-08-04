@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -28,8 +27,8 @@ func getBody(r io.Reader) interface{} {
 
 func handleJsonResponse(url string) (io.Reader, error) {
 	response, err := http.Get(url)
-	if !strings.Contains(response.Header.Get("Content-Type"), "application/json") {
-		return nil, utils.BadRequest("Not Valid JSON response")
+	if !strings.Contains(response.Header.Get(utils.ContentType), utils.Json) {
+		return nil, utils.BadRequest(utils.JsonResponseNotValid)
 	}
 	if err != nil {
 		return nil, err
@@ -39,20 +38,19 @@ func handleJsonResponse(url string) (io.Reader, error) {
 }
 
 func handleInvertUrlResponse(ctxt context.Context, lambdaInput map[string]interface{}) (utils.LambdaResponse, error) {
-	fmt.Println(lambdaInput)
-	url, ok := lambdaInput["url"]
+	url, ok := lambdaInput[utils.Url]
 	if !ok {
-		return utils.LambdaResponse{}, utils.BadRequest("")
+		return utils.LambdaResponse{}, utils.BadRequest(utils.UrlNotExisting)
 	}
 
 	convertedUrl, ok := url.(string)
 	if !ok {
-		return utils.LambdaResponse{}, utils.BadRequest("")
+		return utils.LambdaResponse{}, utils.BadRequest(utils.UrlNotValidText)
 	}
 
 	jsonBody, err := handleJsonResponse(convertedUrl)
 	if err != nil {
-		return utils.LambdaResponse{}, utils.BadRequest("")
+		return utils.LambdaResponse{}, utils.BadRequest(err.Error())
 	}
 
 	HttpBody := getBody(jsonBody)

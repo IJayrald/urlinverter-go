@@ -1,66 +1,66 @@
 package utils
 
 func ReverseArray(urlResponse interface{}) interface{} {
-	value, ok := urlResponse.([]interface{})
+	convertedArray, ok := urlResponse.([]interface{})
 	if !ok {
-		return value
+		return convertedArray
 	}
 
-	arr := make([]interface{}, len(value))
+	allocatedArray := make([]interface{}, len(convertedArray))
 
-	for i := len(value) - 1; i >= 0; i-- {
-		arr[len(value)-1-i] = ReverseUrlResponse(value[i])
+	for i := len(convertedArray) - 1; i >= 0; i-- {
+		allocatedArray[len(convertedArray)-1-i] = ReverseUrlResponse(convertedArray[i])
 	}
 
-	return arr
+	return allocatedArray
 }
 
-func ReverseObject(urlResponse any) map[string]interface{} {
-	value, ok := urlResponse.(map[string]interface{})
+func ReverseObject(urlResponse interface{}) map[string]interface{} {
+	convertedMap, ok := urlResponse.(map[string]interface{})
 	if !ok {
-		return value
+		return convertedMap
 	}
 
-	arr := make(map[string]interface{})
+	allocatedMap := make(map[string]interface{})
 
-	for key, keyVal := range value {
+	for key, value := range convertedMap {
 		reversedKey := ReverseString(key)
-		arr[reversedKey] = ReverseUrlResponse(keyVal)
+		allocatedMap[reversedKey] = ReverseUrlResponse(value)
 	}
 
-	return arr
+	return allocatedMap
 }
 
-func ReverseString(urlResponse any) string {
-	value, ok := urlResponse.(string)
+func ReverseString(urlResponse interface{}) string {
+	convertedString, ok := urlResponse.(string)
 	if !ok {
-		return value
+		return convertedString
 	}
 
-	reversed := make([]byte, len(value))
+	reversed := make([]byte, len(convertedString))
 
-	for i := len(value) - 1; i >= 0; i-- {
-		reversed[i] = value[(len(value)-1)-i]
+	for i := len(convertedString) - 1; i >= 0; i-- {
+		reversed[i] = convertedString[(len(convertedString)-1)-i]
 	}
 
 	return string(reversed)
 }
 
-func ReverseUrlResponse(urlResponse any) any {
-	valueS, ok := urlResponse.(string)
+func ReverseUrlResponse(urlResponse interface{}) interface{} {
+	convertedStringValue, ok := urlResponse.(string)
 	if ok {
-		return ReverseString(valueS)
+		return ReverseString(convertedStringValue)
 	}
 
-	valueM, ok := urlResponse.(map[string]interface{})
+	convertedMapValue, ok := urlResponse.(map[string]interface{})
 	if ok {
-		reversed := ReverseObject(valueM)
+		reversed := ReverseObject(convertedMapValue)
 		return reversed
 	}
 
-	valueA, ok := urlResponse.([]interface{})
+	convertedArrayValue, ok := urlResponse.([]interface{})
 	if ok {
-		return ReverseArray(valueA)
+		return ReverseArray(convertedArrayValue)
 	}
 
 	return urlResponse

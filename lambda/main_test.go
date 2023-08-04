@@ -2,12 +2,13 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"strings"
 	"testing"
 
 	"urlinverter.com/inverter/utils"
 )
 
+// Checks the string reversal
 func TestStringReversal(t *testing.T) {
 	testingData := "test"
 	expected := "tset"
@@ -23,6 +24,7 @@ func TestStringReversal(t *testing.T) {
 	}
 }
 
+// Checks the array and value reversal
 func TestArrayReversal(t *testing.T) {
 	testingData := []interface{}{
 		"ABC",
@@ -33,6 +35,7 @@ func TestArrayReversal(t *testing.T) {
 		"IHG",
 		"FED",
 		"CBA",
+		utils.ReverseString("sample"),
 	}
 
 	reversedArray := utils.ReverseArray(testingData)
@@ -53,15 +56,19 @@ func TestArrayReversal(t *testing.T) {
 	}
 }
 
+// Checks the map key and value reversal
 func TestObjectReversal(t *testing.T) {
+	mockAge := utils.MockData.Int8Between(13, 100)
+	mockPhone := utils.MockData.Person().Contact().Phone
+
 	testingData := map[string]interface{}{
-		"age":         27,
-		"phoneNumber": "09211234567",
+		"age":         mockAge,
+		"phoneNumber": mockPhone,
 	}
 
 	expected := map[string]interface{}{
-		"ega":         27,
-		"rebmuNenohp": "76543211290",
+		"ega":         mockAge,
+		"rebmuNenohp": utils.ReverseString(mockPhone),
 	}
 
 	reversedObject := utils.ReverseObject(testingData)
@@ -82,15 +89,30 @@ func TestObjectReversal(t *testing.T) {
 	}
 }
 
-func TestUrlResponseInverterFunction(t *testing.T) {
+// Checks if url key is existing
+func TestUrlExistingLambdaFunction(t *testing.T) {
+	mockServer := utils.MockServer
+
 	testingData := map[string]interface{}{
-		"url": "https://developers.onemap.sg/commonapi/search?searchVal=revenue&returnGeom=n&getAddrDetails=n&pageNum=1",
+		"url": mockServer.URL,
 	}
 
-	lambdaResponse, err := handleInvertUrlResponse(context.TODO(), testingData)
+	_, err := handleInvertUrlResponse(context.TODO(), testingData)
 	if err != nil {
 		t.Fatalf("Error running \"handleInvertUrlResponse\" function: %s", err)
 	}
+}
 
-	fmt.Println(lambdaResponse)
+// Checks if url key is not existing
+func TestUrlNotExistingLambdaFunction(t *testing.T) {
+	mockServer := utils.MockServer
+
+	testingData := map[string]interface{}{
+		"site": mockServer.URL,
+	}
+
+	_, err := handleInvertUrlResponse(context.TODO(), testingData)
+	if (err != nil) && !strings.Contains(err.Error(), utils.UrlNotExisting) {
+		t.Fatalf("handleInvertUrlResponse function did not handle url key checking")
+	}
 }
