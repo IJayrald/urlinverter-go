@@ -14,7 +14,7 @@ type JsonStack struct {
 	data []ArrayElement
 }
 
-func (s *JsonStack) GetParsedJson() []interface{} {
+func (s *JsonStack) GetParsedJson() interface{} {
 	return s.Top().data
 }
 
@@ -75,9 +75,9 @@ func (s *JsonStack) UnmarshalJSON(b []byte) error {
 func (s *JsonStack) MarshalJSON() ([]byte, error) {
 	var bufferedJson bytes.Buffer
 
-	bundled, err := Bundle(bufferedJson, s.Top().data)
+	err := Bundle(&bufferedJson, s.Top().data)
 
-	return bundled, err
+	return bufferedJson.Bytes(), err
 }
 
 /*

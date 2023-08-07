@@ -1,6 +1,6 @@
 package utils
 
-import "urlinverter.com/inverter/helpers"
+import jstack "urlinverter.com/inverter/jsonstack"
 
 func ReverseArray(urlResponse interface{}) interface{} {
 	convertedArray, ok := urlResponse.([]interface{})
@@ -17,7 +17,7 @@ func ReverseArray(urlResponse interface{}) interface{} {
 	return allocatedArray
 }
 
-func ReverseObject(urlResponse helpers.KeyValue) helpers.KeyValue {
+func ReverseObject(urlResponse jstack.KeyValue) jstack.KeyValue {
 	urlResponse.Key = ReverseString(urlResponse.Key)
 	urlResponse.Value = ReverseUrlResponse(urlResponse.Value)
 
@@ -40,7 +40,7 @@ func ReverseString(urlResponse interface{}) string {
 }
 
 func ReverseUrlResponse(urlResponse interface{}) interface{} {
-	convertedMapValue, ok := urlResponse.(helpers.KeyValue)
+	convertedMapValue, ok := urlResponse.(jstack.KeyValue)
 	if ok {
 		reversed := ReverseObject(convertedMapValue)
 		return reversed

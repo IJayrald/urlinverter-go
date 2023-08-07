@@ -3,11 +3,10 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"strings"
 	"testing"
 
-	"urlinverter.com/inverter/helpers"
+	jstack "urlinverter.com/inverter/jsonstack"
 	"urlinverter.com/inverter/utils"
 )
 
@@ -34,7 +33,7 @@ func TestArrayReversal(t *testing.T) {
 		"DEF",
 		"GHI",
 	}
-	expected := []string{
+	expected := []interface{}{
 		"IHG",
 		"FED",
 		"CBA",
@@ -58,81 +57,187 @@ func TestArrayReversal(t *testing.T) {
 	}
 }
 
-// Checks the map key and value reversal
+// Tests array key-value reversal
 func TestObjectReversal(t *testing.T) {
-	// mockAge := utils.MockData.Int8Between(13, 100)
-	// mockPhone := utils.MockData.Person().Contact().Phone
+	testingData := []interface{}{
+		jstack.KeyValue{Key: "name", Value: "Golang"},
+		jstack.KeyValue{Key: "age", Value: 14},
+		jstack.KeyValue{Key: "creator", Value: "Google Inc."},
+	}
 
-	// testingData := map[string]interface{}{
-	// 	"age":         mockAge,
-	// 	"phoneNumber": mockPhone,
-	// }
+	expected := []jstack.KeyValue{
+		{Key: "rotaerc", Value: ".cnI elgooG"},
+		{Key: "ega", Value: 14},
+		{Key: "eman", Value: "gnaloG"},
+	}
 
-	// expected := map[string]interface{}{
-	// 	"ega":         mockAge,
-	// 	"rebmuNenohp": utils.ReverseString(mockPhone),
-	// }
+	arbitraryValue := utils.ReverseUrlResponse(testingData)
 
-	// reversedObject := utils.ReverseObject(testingData)
+	convertedInterface, ok := arbitraryValue.([]interface{})
+	if !ok {
+		t.Fatal("Expected array cannot be converted")
+	}
 
-	// if len(reversedObject) == 0 {
-	// 	t.Fatalf("Empty reversed object: %s", reversedObject)
-	// }
+	for index := 0; index < len(convertedInterface)-1; index++ {
+		reversedKeyValue, ok := convertedInterface[index].(jstack.KeyValue)
+		if !ok {
+			t.Fatal("Expected KeyValy cannot be converted")
+		}
 
-	// for key, value := range reversedObject {
-	// 	expectedValue, ok := expected[key]
-	// 	if !ok {
-	// 		t.Fatalf("Key %s is not reversed", key)
-	// 	}
-
-	// 	if expectedValue != value {
-	// 		t.Fatalf("Value %s is not equal to expected value. Not reversed", expectedValue)
-	// 	}
-	// }
+		if (reversedKeyValue.Key != expected[index].Key) || (reversedKeyValue.Value != expected[index].Value) {
+			t.Fatal(utils.ReversedNotExpected)
+		}
+	}
 }
 
-func TestJsonStringReversal(t *testing.T) {
-	testingData := `{
-		"found": 1,
-		"totalNumPages": 1,
-		"pageNum": 1,
-		"results": [
-		  {
-			"SEARCHVAL": "REVENUE HOUSE"
-		  }
-		]
-	  }`
-	// expected := `{
-	// 	"slliks": [
-	// 		"gnitupmoc duolc",
-	// 		"tnempoleved erawtfos"
-	// 	],
-	// 	"di": 123,
-	// 	"eman": {
-	// 		"tsal": "onipmE",
-	// 		"elddim": "reselluB",
-	// 		"tsrif": "dlaryaJ"
-	// 	}
-	// }`
+// Tests JSON object of strings reversal
+func TestJsonArrayStringReversal(t *testing.T) {
+	testingData := `["golang","reactjs"]`
 
-	sam := &helpers.JsonStack{}
-	json.Unmarshal([]byte(testingData), sam)
+	expected := `["sjtcaer","gnalog"]`
 
-	// fmt.Println(sam.GetParsedJson())
+	testingJson := &jstack.JsonStack{}
+	json.Unmarshal([]byte(testingData), testingJson)
 
-	// sam.ReverseJson(utils.ReverseUrlResponse)
+	testingJson.ReverseJson(utils.ReverseUrlResponse)
 
-	buffered, err := json.Marshal(sam)
+	reversedJson, err := json.Marshal(testingJson)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	fmt.Println(buffered)
-
-	// fmt.Println(sam.GetParsedJson())
+	if string(reversedJson) != expected {
+		t.Fatal(utils.ReversedNotExpected)
+	}
 }
 
-// Checks if lambda function responds to event
+// Tests JSON object reversal
+func TestJsonObjectStringReversal(t *testing.T) {
+	testingData := `{"name":"golang jr.","age":7,"creator":"Google Inc."}`
+
+	expected := `{"rotaerc":".cnI elgooG","ega":7,"eman":".rj gnalog"}`
+
+	testingJson := &jstack.JsonStack{}
+	json.Unmarshal([]byte(testingData), testingJson)
+
+	testingJson.ReverseJson(utils.ReverseUrlResponse)
+
+	reversedJson, err := json.Marshal(testingJson)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if string(reversedJson) != expected {
+		t.Fatal(utils.ReversedNotExpected)
+	}
+}
+
+// Tests JSON array of numbers - float and int reversal
+func TestJsonArrayOfNumberStringReversal(t *testing.T) {
+	testingData := `[1,2,3,9.4,23,9]`
+
+	expected := `[9,23,9.4,3,2,1]`
+
+	testingJson := &jstack.JsonStack{}
+	json.Unmarshal([]byte(testingData), testingJson)
+
+	testingJson.ReverseJson(utils.ReverseUrlResponse)
+
+	reversedJson, err := json.Marshal(testingJson)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if string(reversedJson) != expected {
+		t.Fatal(utils.ReversedNotExpected)
+	}
+}
+
+// Tests JSON array of booleans reversal
+func TestJsonArrayOfBooleanStringReversal(t *testing.T) {
+	testingData := `[true,false,false,true,true,false,false,true,true,true]`
+
+	expected := `[true,true,true,false,false,true,true,false,false,true]`
+
+	testingJson := &jstack.JsonStack{}
+	json.Unmarshal([]byte(testingData), testingJson)
+
+	testingJson.ReverseJson(utils.ReverseUrlResponse)
+
+	reversedJson, err := json.Marshal(testingJson)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if string(reversedJson) != expected {
+		t.Fatal(utils.ReversedNotExpected)
+	}
+}
+
+// Tests JSON array object without sub-objects reversal
+func TestJsonArrayOfObjectLevel0StringReversal(t *testing.T) {
+	testingData := `[{"name":"golang","age":27,"creator":"Google Inc."},{"name":"java","age":13,"creator":"James Gosling"}]`
+
+	expected := `[{"rotaerc":"gnilsoG semaJ","ega":13,"eman":"avaj"},{"rotaerc":".cnI elgooG","ega":27,"eman":"gnalog"}]`
+
+	testingJson := &jstack.JsonStack{}
+	json.Unmarshal([]byte(testingData), testingJson)
+
+	testingJson.ReverseJson(utils.ReverseUrlResponse)
+
+	reversedJson, err := json.Marshal(testingJson)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if string(reversedJson) != expected {
+		t.Fatal(utils.ReversedNotExpected)
+	}
+}
+
+// Tests JSON array object with 1 sub-object reversal
+func TestJsonObjectLevel1StringReversal(t *testing.T) {
+	testingData := `[{"name":{"first":"John","middle":"Ham","last":"Smith"},"age":37}]`
+
+	expected := `[{"ega":37,"eman":{"tsal":"htimS","elddim":"maH","tsrif":"nhoJ"}}]`
+
+	testingJson := &jstack.JsonStack{}
+	json.Unmarshal([]byte(testingData), testingJson)
+
+	testingJson.ReverseJson(utils.ReverseUrlResponse)
+
+	reversedJson, err := json.Marshal(testingJson)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if string(reversedJson) != expected {
+		t.Fatal(utils.ReversedNotExpected)
+	}
+}
+
+// Tests JSON array object with 2 sub-objects reversal
+func TestJsonObjectLevel2StringReversal(t *testing.T) {
+	testingData := `[{"name":{"first":"John","middle":"Ham","last":"Smith"},"age":37,"skills":[{"description":"Can do software development"},{"description":"Able to construct cloud infrastructure"}]}]`
+
+	expected := `[{"slliks":[{"noitpircsed":"erutcurtsarfni duolc tcurtsnoc ot elbA"},{"noitpircsed":"tnempoleved erawtfos od naC"}],"ega":37,"eman":{"tsal":"htimS","elddim":"maH","tsrif":"nhoJ"}}]`
+
+	testingJson := &jstack.JsonStack{}
+	json.Unmarshal([]byte(testingData), testingJson)
+
+	testingJson.ReverseJson(utils.ReverseUrlResponse)
+
+	reversedJson, err := json.Marshal(testingJson)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if string(reversedJson) != expected {
+		t.Fatal(utils.ReversedNotExpected)
+	}
+}
+
+// Tests if lambda function responds to event reversal
 func TestUrlExistingLambdaFunction(t *testing.T) {
 	mockServer := utils.MockServer
 
@@ -140,15 +245,13 @@ func TestUrlExistingLambdaFunction(t *testing.T) {
 		"url": mockServer.URL,
 	}
 
-	fg, err := handleInvertUrlResponse(context.TODO(), testingData)
+	_, err := handleInvertUrlResponse(context.TODO(), testingData)
 	if err != nil {
 		t.Fatalf("Error running \"handleInvertUrlResponse\" function: %s", err)
 	}
-
-	fmt.Println(fg)
 }
 
-// Checks if url key is not existing
+// Tests if url key is not existing reversal
 func TestUrlNotExistingLambdaFunction(t *testing.T) {
 	mockServer := utils.MockServer
 

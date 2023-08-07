@@ -26,3 +26,8 @@ const (
 const (
 	Success = "Request Successful"
 )
+
+// Tests constants
+const (
+	ReversedNotExpected = "Reversed JSON is not equal to expected output"
+)

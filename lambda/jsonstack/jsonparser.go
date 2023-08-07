@@ -35,14 +35,14 @@ func ParseTraverse(d *json.Decoder, js *JsonStack) error {
 
 	if top.dataType == '{' {
 		isOpen := top.hasIncompleteData()
-		if !isOpen {
-			top.append(KeyValue{
-				Key:   token,
-				Value: nil,
-			})
+		if isOpen {
+			top.supplyIncompleteData(token)
 			return ParseTraverse(d, js)
 		}
-		top.supplyIncompleteData(token)
+		top.append(KeyValue{
+			Key:   token,
+			Value: nil,
+		})
 		return ParseTraverse(d, js)
 	}
 

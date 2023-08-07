@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/aws/aws-lambda-go/lambda"
-	"urlinverter.com/inverter/helpers"
+	jstack "urlinverter.com/inverter/jsonstack"
 	"urlinverter.com/inverter/utils"
 )
 
@@ -52,18 +52,21 @@ func handleInvertUrlResponse(ctxt context.Context, lambdaInput map[string]interf
 
 	HttpBody := getBody(jsonBody)
 
-	jsonStack := &helpers.JsonStack{}
+	jsonStack := &jstack.JsonStack{}
 	json.Unmarshal(HttpBody, &jsonStack)
 
 	jsonStack.ReverseJson(utils.ReverseUrlResponse)
 
-	reversed := jsonStack.GetParsedJson()
+	reversed, err := json.Marshal(jsonStack)
+	if err != nil {
+		return utils.LambdaResponse{}, err
+	}
 
 	return utils.LambdaResponse{
 		Message: utils.Success,
 		Details: utils.Details{
 			Response: string(HttpBody),
-			Inverted: reversed,
+			Inverted: string(reversed),
 		},
 	}, nil
 }
