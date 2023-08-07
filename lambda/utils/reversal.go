@@ -1,5 +1,7 @@
 package utils
 
+import "urlinverter.com/inverter/helpers"
+
 func ReverseArray(urlResponse interface{}) interface{} {
 	convertedArray, ok := urlResponse.([]interface{})
 	if !ok {
@@ -15,20 +17,11 @@ func ReverseArray(urlResponse interface{}) interface{} {
 	return allocatedArray
 }
 
-func ReverseObject(urlResponse interface{}) map[string]interface{} {
-	convertedMap, ok := urlResponse.(map[string]interface{})
-	if !ok {
-		return convertedMap
-	}
+func ReverseObject(urlResponse helpers.KeyValue) helpers.KeyValue {
+	urlResponse.Key = ReverseString(urlResponse.Key)
+	urlResponse.Value = ReverseUrlResponse(urlResponse.Value)
 
-	allocatedMap := make(map[string]interface{})
-
-	for key, value := range convertedMap {
-		reversedKey := ReverseString(key)
-		allocatedMap[reversedKey] = ReverseUrlResponse(value)
-	}
-
-	return allocatedMap
+	return urlResponse
 }
 
 func ReverseString(urlResponse interface{}) string {
@@ -47,12 +40,7 @@ func ReverseString(urlResponse interface{}) string {
 }
 
 func ReverseUrlResponse(urlResponse interface{}) interface{} {
-	convertedStringValue, ok := urlResponse.(string)
-	if ok {
-		return ReverseString(convertedStringValue)
-	}
-
-	convertedMapValue, ok := urlResponse.(map[string]interface{})
+	convertedMapValue, ok := urlResponse.(helpers.KeyValue)
 	if ok {
 		reversed := ReverseObject(convertedMapValue)
 		return reversed
@@ -61,6 +49,11 @@ func ReverseUrlResponse(urlResponse interface{}) interface{} {
 	convertedArrayValue, ok := urlResponse.([]interface{})
 	if ok {
 		return ReverseArray(convertedArrayValue)
+	}
+
+	convertedStringValue, ok := urlResponse.(string)
+	if ok {
+		return ReverseString(convertedStringValue)
 	}
 
 	return urlResponse

@@ -14,7 +14,7 @@ var MockServer = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter,
 	w.Header().Add(ContentType, Json)
 
 	serialized, err := json.Marshal(map[string]interface{}{
-		"id":    MockData.UUID(),
+		"id":    MockData.RandomNumber(5),
 		"name":  MockData.Person().Name(),
 		"email": MockData.Person().Contact().Email,
 		"address": map[string]interface{}{
@@ -22,7 +22,7 @@ var MockServer = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter,
 			"country":     MockData.Address().Country(),
 			"city":        MockData.Address().City(),
 		},
-		"phoneNumber": MockData.Phone(),
+		"phoneNumber": MockData.Person().Contact().Phone,
 	})
 	if err != nil {
 		w.Write([]byte(err.Error()))

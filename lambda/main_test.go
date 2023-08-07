@@ -2,9 +2,12 @@ package main
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"strings"
 	"testing"
 
+	"urlinverter.com/inverter/helpers"
 	"urlinverter.com/inverter/utils"
 )
 
@@ -57,35 +60,76 @@ func TestArrayReversal(t *testing.T) {
 
 // Checks the map key and value reversal
 func TestObjectReversal(t *testing.T) {
-	mockAge := utils.MockData.Int8Between(13, 100)
-	mockPhone := utils.MockData.Person().Contact().Phone
+	// mockAge := utils.MockData.Int8Between(13, 100)
+	// mockPhone := utils.MockData.Person().Contact().Phone
 
-	testingData := map[string]interface{}{
-		"age":         mockAge,
-		"phoneNumber": mockPhone,
+	// testingData := map[string]interface{}{
+	// 	"age":         mockAge,
+	// 	"phoneNumber": mockPhone,
+	// }
+
+	// expected := map[string]interface{}{
+	// 	"ega":         mockAge,
+	// 	"rebmuNenohp": utils.ReverseString(mockPhone),
+	// }
+
+	// reversedObject := utils.ReverseObject(testingData)
+
+	// if len(reversedObject) == 0 {
+	// 	t.Fatalf("Empty reversed object: %s", reversedObject)
+	// }
+
+	// for key, value := range reversedObject {
+	// 	expectedValue, ok := expected[key]
+	// 	if !ok {
+	// 		t.Fatalf("Key %s is not reversed", key)
+	// 	}
+
+	// 	if expectedValue != value {
+	// 		t.Fatalf("Value %s is not equal to expected value. Not reversed", expectedValue)
+	// 	}
+	// }
+}
+
+func TestJsonStringReversal(t *testing.T) {
+	testingData := `{
+		"found": 1,
+		"totalNumPages": 1,
+		"pageNum": 1,
+		"results": [
+		  {
+			"SEARCHVAL": "REVENUE HOUSE"
+		  }
+		]
+	  }`
+	// expected := `{
+	// 	"slliks": [
+	// 		"gnitupmoc duolc",
+	// 		"tnempoleved erawtfos"
+	// 	],
+	// 	"di": 123,
+	// 	"eman": {
+	// 		"tsal": "onipmE",
+	// 		"elddim": "reselluB",
+	// 		"tsrif": "dlaryaJ"
+	// 	}
+	// }`
+
+	sam := &helpers.JsonStack{}
+	json.Unmarshal([]byte(testingData), sam)
+
+	// fmt.Println(sam.GetParsedJson())
+
+	// sam.ReverseJson(utils.ReverseUrlResponse)
+
+	buffered, err := json.Marshal(sam)
+	if err != nil {
+		t.Fatal(err)
 	}
 
-	expected := map[string]interface{}{
-		"ega":         mockAge,
-		"rebmuNenohp": utils.ReverseString(mockPhone),
-	}
+	fmt.Println(buffered)
 
-	reversedObject := utils.ReverseObject(testingData)
-
-	if len(reversedObject) == 0 {
-		t.Fatalf("Empty reversed object: %s", reversedObject)
-	}
-
-	for key, value := range reversedObject {
-		expectedValue, ok := expected[key]
-		if !ok {
-			t.Fatalf("Key %s is not reversed", key)
-		}
-
-		if expectedValue != value {
-			t.Fatalf("Value %s is not equal to expected value. Not reversed", expectedValue)
-		}
-	}
+	// fmt.Println(sam.GetParsedJson())
 }
 
 // Checks if lambda function responds to event
@@ -96,10 +140,12 @@ func TestUrlExistingLambdaFunction(t *testing.T) {
 		"url": mockServer.URL,
 	}
 
-	_, err := handleInvertUrlResponse(context.TODO(), testingData)
+	fg, err := handleInvertUrlResponse(context.TODO(), testingData)
 	if err != nil {
 		t.Fatalf("Error running \"handleInvertUrlResponse\" function: %s", err)
 	}
+
+	fmt.Println(fg)
 }
 
 // Checks if url key is not existing

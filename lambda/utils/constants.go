@@ -1,12 +1,5 @@
 package utils
 
-// HTTP-based Error
-const (
-	HttpInvalidMethod       = "Invalid Method Request"
-	HttpBadRequest          = "Invalid Request"
-	HttpInternalServerError = "Internal Server Error"
-)
-
 // HTTP-based Headers
 const (
 	ContentType = "Content-Type"
