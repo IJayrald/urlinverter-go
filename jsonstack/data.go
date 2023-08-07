@@ -1,4 +1,4 @@
-package helpers
+package jsonstack
 
 type KeyValue struct {
 	Key   interface{} `json:"key"`

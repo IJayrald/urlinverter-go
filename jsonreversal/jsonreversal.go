@@ -46,8 +46,6 @@ func HandleInvertUrlResponse(url string) (utils.Response, error) {
 	jsonStack := &jstack.JsonStack{}
 	json.Unmarshal(HttpBody, &jsonStack)
 
-	jsonStack.ReverseJson(utils.ReverseUrlResponse)
-
 	reversed, err := json.Marshal(jsonStack)
 	if err != nil {
 		return utils.Response{}, err

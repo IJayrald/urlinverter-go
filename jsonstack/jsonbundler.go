@@ -1,4 +1,4 @@
-package helpers
+package jsonstack
 
 import (
 	"bytes"
@@ -33,8 +33,8 @@ func bundleObject(b *bytes.Buffer, data []interface{}) error {
 
 func bundleArray(b *bytes.Buffer, data []interface{}) error {
 	b.WriteRune('[')
-	for index, value := range data {
-		err := Bundle(b, value)
+	for index, sliceElement := range data {
+		err := Bundle(b, sliceElement)
 		if err != nil {
 			return err
 		}
@@ -70,6 +70,11 @@ func Bundle(b *bytes.Buffer, data interface{}) error {
 	textValue, ok := data.(string)
 	if ok {
 		return bundleString(b, textValue)
+	}
+
+	if data == nil {
+		b.WriteString("null")
+		return nil
 	}
 
 	b.WriteString(fmt.Sprintf("%v", data))
