@@ -17,9 +17,7 @@ func bundleObject(b *bytes.Buffer, data []interface{}) error {
 		if !ok {
 			return errors.New("Cannot convert \"Key\" to string")
 		}
-		b.WriteRune('"')
-		b.WriteString(key)
-		b.WriteRune('"')
+		bundleString(b, key)
 		b.WriteRune(':')
 		err := Bundle(b, keyValue.Value)
 		if err != nil {

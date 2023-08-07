@@ -1,6 +1,6 @@
 package utils
 
-import jstack "urlinverter.com/inverter/jsonstack"
+import jstack "jsonstack"
 
 func ReverseArray(urlResponse interface{}) interface{} {
 	convertedArray, ok := urlResponse.([]interface{})

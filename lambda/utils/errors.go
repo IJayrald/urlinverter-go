@@ -1,15 +1,21 @@
 package utils
 
-import "fmt"
+import (
+	"encoding/json"
+)
 
-type InvalidMethod string
-
-func (s InvalidMethod) Error() string {
-	return fmt.Sprintf("HTTP Invalid Method: %s", string(s))
+type ErrorResponse struct {
+	Message string `json:"message"`
+	Details string `json:"details"`
 }
 
-type BadRequest string
+func (er *ErrorResponse) Error() string {
+	errorResponse := ErrorResponse{
+		Message: er.Message,
+		Details: er.Details,
+	}
 
-func (b BadRequest) Error() string {
-	return fmt.Sprintf("HTTP Bad Request: %s", string(b))
+	response, _ := json.Marshal(errorResponse)
+
+	return string(response)
 }

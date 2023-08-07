@@ -2,75 +2,32 @@ package main
 
 import (
 	"context"
-	"encoding/json"
-	"io"
-	"log"
-	"net/http"
-	"strings"
+	jreversal "jsonreversal"
+	"lambda/utils"
 
 	"github.com/aws/aws-lambda-go/lambda"
-	jstack "urlinverter.com/inverter/jsonstack"
-	"urlinverter.com/inverter/utils"
 )
 
-func getBody(r io.Reader) []byte {
-	requestBody, err := io.ReadAll(r)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return requestBody
-}
-
-func handleJsonResponse(url string) (io.Reader, error) {
-	response, err := http.Get(url)
-	if !strings.Contains(response.Header.Get(utils.ContentType), utils.Json) {
-		return nil, utils.BadRequest(utils.JsonResponseNotValid)
-	}
-	if err != nil {
-		return nil, err
-	}
-
-	return response.Body, nil
-}
-
-func handleInvertUrlResponse(ctxt context.Context, lambdaInput map[string]interface{}) (utils.LambdaResponse, error) {
-	url, ok := lambdaInput[utils.Url]
+func HandleLambdaEventRequest(ctx context.Context, lambdaInput map[string]interface{}) (interface{}, error) {
+	arbitraryValue, ok := lambdaInput["url"]
 	if !ok {
-		return utils.LambdaResponse{}, utils.BadRequest(utils.UrlNotExisting)
+		return nil, &utils.ErrorResponse{
+			Message: "Cannot find url property",
+			Details: "Please pass a valid url",
+		}
 	}
 
-	convertedUrl, ok := url.(string)
+	url, ok := arbitraryValue.(string)
 	if !ok {
-		return utils.LambdaResponse{}, utils.BadRequest(utils.UrlNotValidText)
+		return nil, &utils.ErrorResponse{
+			Message: "Invalid url type",
+			Details: "Please pass url in text type",
+		}
 	}
 
-	jsonBody, err := handleJsonResponse(convertedUrl)
-	if err != nil {
-		return utils.LambdaResponse{}, utils.BadRequest(err.Error())
-	}
-
-	HttpBody := getBody(jsonBody)
-
-	jsonStack := &jstack.JsonStack{}
-	json.Unmarshal(HttpBody, &jsonStack)
-
-	jsonStack.ReverseJson(utils.ReverseUrlResponse)
-
-	reversed, err := json.Marshal(jsonStack)
-	if err != nil {
-		return utils.LambdaResponse{}, err
-	}
-
-	return utils.LambdaResponse{
-		Message: utils.Success,
-		Details: utils.Details{
-			Response: string(HttpBody),
-			Inverted: string(reversed),
-		},
-	}, nil
+	return jreversal.HandleInvertUrlResponse(url)
 }
 
 func main() {
-	lambda.Start(handleInvertUrlResponse)
+	lambda.Start(HandleLambdaEventRequest)
 }
