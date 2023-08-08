@@ -1,12 +1,9 @@
 package main
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"mainlambda/utils"
-	"strconv"
 	"strings"
 	"testing"
 )
@@ -21,35 +18,10 @@ func TestUrlPropertyExistsLambdaFunction(t *testing.T) {
 	}
 
 	response, err := HandleLambdaEventRequest(context.TODO(), testingData)
-
-	convertedResponse, ok := response.(utils.Response)
-	if !ok {
-		t.Fatal(GeneralUnexpectedError, "Cannot convert to Response type")
-	}
-
-	buffered, err := json.Marshal(convertedResponse.Details)
-
-	var details utils.Details
-
-	json.Unmarshal(buffered, &details)
-
-	var b bytes.Buffer
-
-	unquotedOriginal, err := strconv.Unquote(fmt.Sprintf(`%q`, details.Original))
-	unquotedReversed, err := strconv.Unquote(fmt.Sprintf(`%q`, details.Reversed))
-
-	json.Indent(&b, []byte(unquotedOriginal), "", "\t")
-
-	fmt.Println(b.String())
-
-	b.Reset()
-	json.Indent(&b, []byte(unquotedReversed), "", "\t")
-
-	fmt.Println(b.String())
-
 	if err != nil {
 		t.Fatal(GeneralUnexpectedError, err)
 	}
+	fmt.Println(response)
 }
 
 func TestUrlPropertyNotExistsLambdaFunction(t *testing.T) {
