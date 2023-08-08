@@ -2,7 +2,6 @@ package jsonreversal_test
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
 	"testing"
 
@@ -67,8 +66,8 @@ func TestObjectReversal(t *testing.T) {
 	}
 
 	expected := []jstack.KeyValue{
-		{Key: "ega", Value: 14},
 		{Key: "rotaerc", Value: ".cnI elgooG"},
+		{Key: "ega", Value: 14},
 		{Key: "eman", Value: "gnaloG"},
 	}
 
@@ -78,8 +77,6 @@ func TestObjectReversal(t *testing.T) {
 	if !ok {
 		t.Fatal("Expected array cannot be converted")
 	}
-
-	fmt.Println(convertedInterface)
 
 	for index := 0; index < len(convertedInterface)-1; index++ {
 		reversedKeyValue, ok := convertedInterface[index].(jstack.KeyValue)
@@ -246,11 +243,10 @@ func TestExistingUrl(t *testing.T) {
 
 	testingUrl := mockServer.URL
 
-	response, err := jreversal.HandleInvertUrlResponse(testingUrl)
+	_, err := jreversal.HandleInvertUrlResponse(testingUrl)
 	if err != nil {
 		t.Fatalf("Error running \"handleInvertUrlResponse\" function: %s", err)
 	}
-	fmt.Println(response)
 }
 
 // Tests if the function handles empty url

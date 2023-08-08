@@ -1,7 +1,6 @@
 package jsonreversal
 
 import (
-	"bytes"
 	"encoding/json"
 	"io"
 	"jsonreversal/utils"
@@ -49,20 +48,13 @@ func HandleInvertUrlResponse(url string) (interface{}, error) {
 
 	jsonStack.ReverseJson(utils.ReverseUrlResponse)
 
-	// reversed, err := json.Marshal(jsonStack)
-	// if err != nil {
-	// 	return utils.Details{}, err
-	// }
-
-	var s map[string]interface{}
-
-	var a bytes.Buffer
-
-	json.Unmarshal(HttpBody, &s)
-
-	json.Indent(&a, HttpBody, "", "\t")
+	reversed, err := json.Marshal(jsonStack)
+	if err != nil {
+		return utils.Details{}, err
+	}
 
 	return map[string]interface{}{
-		"original": a.String(),
+		"original": string(HttpBody),
+		"reversed": string(reversed),
 	}, nil
 }

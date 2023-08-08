@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"mainlambda/utils"
 	"strings"
 	"testing"
@@ -17,11 +16,10 @@ func TestUrlPropertyExistsLambdaFunction(t *testing.T) {
 		"url": mockServer.URL,
 	}
 
-	response, err := HandleLambdaEventRequest(context.TODO(), testingData)
+	_, err := HandleLambdaEventRequest(context.TODO(), testingData)
 	if err != nil {
 		t.Fatal(GeneralUnexpectedError, err)
 	}
-	fmt.Println(response)
 }
 
 func TestUrlPropertyNotExistsLambdaFunction(t *testing.T) {
