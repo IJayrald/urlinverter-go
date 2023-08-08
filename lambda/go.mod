@@ -1,4 +1,4 @@
-module lambda
+module mainlambda
 
 go 1.20
 

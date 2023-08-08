@@ -1,6 +1,7 @@
 package jsonreversal
 
 import (
+	"bytes"
 	"encoding/json"
 	"io"
 	"jsonreversal/utils"
@@ -31,14 +32,14 @@ func handleJsonResponse(url string) (io.Reader, error) {
 	return response.Body, nil
 }
 
-func HandleInvertUrlResponse(url string) (utils.Response, error) {
+func HandleInvertUrlResponse(url string) (interface{}, error) {
 	if len(strings.TrimSpace(url)) == 0 {
-		return utils.Response{}, utils.BadRequest("url should not be empty")
+		return utils.Details{}, utils.BadRequest("url should not be empty")
 	}
 
 	jsonBody, err := handleJsonResponse(url)
 	if err != nil {
-		return utils.Response{}, utils.BadRequest(err.Error())
+		return utils.Details{}, utils.BadRequest(err.Error())
 	}
 
 	HttpBody := getBody(jsonBody)
@@ -46,13 +47,22 @@ func HandleInvertUrlResponse(url string) (utils.Response, error) {
 	jsonStack := &jstack.JsonStack{}
 	json.Unmarshal(HttpBody, &jsonStack)
 
-	reversed, err := json.Marshal(jsonStack)
-	if err != nil {
-		return utils.Response{}, err
-	}
+	jsonStack.ReverseJson(utils.ReverseUrlResponse)
 
-	return utils.Response{
-		Original: string(HttpBody),
-		Reversed: string(reversed),
+	// reversed, err := json.Marshal(jsonStack)
+	// if err != nil {
+	// 	return utils.Details{}, err
+	// }
+
+	var s map[string]interface{}
+
+	var a bytes.Buffer
+
+	json.Unmarshal(HttpBody, &s)
+
+	json.Indent(&a, HttpBody, "", "\t")
+
+	return map[string]interface{}{
+		"original": a.String(),
 	}, nil
 }

@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	jreversal "jsonreversal"
-	"lambda/utils"
+	"mainlambda/utils"
 
 	"github.com/aws/aws-lambda-go/lambda"
 )
@@ -25,7 +25,25 @@ func HandleLambdaEventRequest(ctx context.Context, lambdaInput map[string]interf
 		}
 	}
 
-	return jreversal.HandleInvertUrlResponse(url)
+	if len(url) == 0 {
+		return nil, &utils.ErrorResponse{
+			Message: "Url is empty",
+			Details: "Please pass url value",
+		}
+	}
+
+	response, err := jreversal.HandleInvertUrlResponse(url)
+	if err != nil {
+		return nil, &utils.ErrorResponse{
+			Message: "Error inverting URL response",
+			Details: err.Error(),
+		}
+	}
+
+	return utils.Response{
+		Message: "Success inverting URL response",
+		Details: response,
+	}, nil
 }
 
 func main() {
