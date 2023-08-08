@@ -10,12 +10,7 @@ type ErrorResponse struct {
 }
 
 func (er *ErrorResponse) Error() string {
-	errorResponse := ErrorResponse{
-		Message: er.Message,
-		Details: er.Details,
-	}
-
-	response, _ := json.Marshal(errorResponse)
+	response, _ := json.Marshal(er)
 
 	return string(response)
 }

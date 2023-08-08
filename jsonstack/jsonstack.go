@@ -14,41 +14,41 @@ type JsonStack struct {
 	data []ArrayElement
 }
 
-func (s *JsonStack) GetParsedJson() interface{} {
-	return s.Top().data
+func (js *JsonStack) GetParsedJson() interface{} {
+	return js.Top().data
 }
 
 // Pushes the ArrayElement on the stack
-func (s *JsonStack) Push(data ArrayElement) {
-	s.data = append(s.data, data)
+func (js *JsonStack) Push(data ArrayElement) {
+	js.data = append(js.data, data)
 }
 
 // Gets the topmost ArrayElement in the stack and returns it as a pointer
-func (s *JsonStack) Top() *ArrayElement {
-	return &s.data[len(s.data)-1]
+func (js *JsonStack) Top() *ArrayElement {
+	return &js.data[len(js.data)-1]
 }
 
 // Removes the topmost ArrayElement in the stack. Commonly used when formatting process has finished
-func (s *JsonStack) Pop() interface{} {
+func (js *JsonStack) Pop() interface{} {
 	var temp []interface{}
 
-	index := len(s.data) - 1
+	index := len(js.data) - 1
 
 	if index == 0 {
 		return nil
 	}
 
-	temp = s.data[index].data
+	temp = js.data[index].data
 
-	s.data = s.data[:index]
+	js.data = js.data[:index]
 
 	return temp
 }
 
 // Pops the stack and conditionally merge it to the previous ArrayElement
-func (s *JsonStack) MergePop() {
-	pop := s.Pop()
-	top := s.Top()
+func (js *JsonStack) MergePop() {
+	pop := js.Pop()
+	top := js.Top()
 
 	if pop == nil {
 		return
@@ -64,18 +64,18 @@ func (s *JsonStack) MergePop() {
 }
 
 // json.Unmarshall calls this method when unmarshalled to the JsonStack struct
-func (s *JsonStack) UnmarshalJSON(b []byte) error {
+func (js *JsonStack) UnmarshalJSON(b []byte) error {
 	decoder := json.NewDecoder(bytes.NewReader(b))
 
-	err := ParseTraverse(decoder, s)
+	err := ParseTraverse(decoder, js)
 
 	return err
 }
 
-func (s *JsonStack) MarshalJSON() ([]byte, error) {
+func (js *JsonStack) MarshalJSON() ([]byte, error) {
 	var bufferedJson bytes.Buffer
 
-	err := Bundle(&bufferedJson, s.Top().data)
+	err := Bundle(&bufferedJson, js.Top().data)
 
 	return bufferedJson.Bytes(), err
 }
@@ -89,9 +89,9 @@ Object => The keys order will be reversed
 
 String => The texts will be reversed
 */
-func (s *JsonStack) ReverseJson(reversalFunc func(interface{}) interface{}) {
-	reversed, ok := reversalFunc(s.GetParsedJson()).([]interface{})
+func (js *JsonStack) ReverseJson(reversalFunc func(interface{}) interface{}) {
+	reversed, ok := reversalFunc(js.GetParsedJson()).([]interface{})
 	if ok {
-		s.Top().data = reversed
+		js.Top().data = reversed
 	}
 }

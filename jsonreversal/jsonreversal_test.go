@@ -2,6 +2,7 @@ package jsonreversal_test
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"testing"
 
@@ -66,8 +67,8 @@ func TestObjectReversal(t *testing.T) {
 	}
 
 	expected := []jstack.KeyValue{
-		{Key: "rotaerc", Value: ".cnI elgooG"},
 		{Key: "ega", Value: 14},
+		{Key: "rotaerc", Value: ".cnI elgooG"},
 		{Key: "eman", Value: "gnaloG"},
 	}
 
@@ -77,6 +78,8 @@ func TestObjectReversal(t *testing.T) {
 	if !ok {
 		t.Fatal("Expected array cannot be converted")
 	}
+
+	fmt.Println(convertedInterface)
 
 	for index := 0; index < len(convertedInterface)-1; index++ {
 		reversedKeyValue, ok := convertedInterface[index].(jstack.KeyValue)
@@ -237,24 +240,25 @@ func TestJsonObjectLevel2StringReversal(t *testing.T) {
 	}
 }
 
-// Tests if lambda function responds to event reversal
-func TestValidUrlLambdaFunction(t *testing.T) {
+// Tests if the function handles existing url
+func TestExistingUrl(t *testing.T) {
 	mockServer := utils.MockServer
 
 	testingUrl := mockServer.URL
 
-	_, err := jreversal.HandleInvertUrlResponse(testingUrl)
+	response, err := jreversal.HandleInvertUrlResponse(testingUrl)
 	if err != nil {
 		t.Fatalf("Error running \"handleInvertUrlResponse\" function: %s", err)
 	}
+	fmt.Println(response)
 }
 
-// Tests if url key is not existing reversal
-func TestEmptyUrlLambdaFunction(t *testing.T) {
+// Tests if the function handles empty url
+func TestEmptyUrl(t *testing.T) {
 	testingUrl := ""
 
 	_, err := jreversal.HandleInvertUrlResponse(testingUrl)
-	if (err != nil) && !strings.Contains(err.Error(), utils.UrlNotExisting) {
+	if (err != nil) && !strings.Contains(err.Error(), "url should not be empty") {
 		t.Fatalf("handleInvertUrlResponse function did not handle url key checking")
 	}
 }

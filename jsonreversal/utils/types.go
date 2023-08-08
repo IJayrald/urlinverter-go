@@ -1,6 +1,6 @@
 package utils
 
-type Response struct {
+type Details struct {
 	Original any `json:"original"`
 	Reversed any `json:"reversed"`
 }
